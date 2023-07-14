@@ -49,14 +49,21 @@ const listClientes = [
 
 export default function Clientes() {
   const [clientes, setClientes] = useState(listClientes);
-  useEffect(() => {
-    let data = getDataFromLocalStorage("listClientes");
-    setClientes(data);
-  });
+
+  useEffect(
+    () => {
+      let data = getDataFromLocalStorage("listClientes");
+      if (data && Array.isArray(data)) {
+        setClientes(data);
+      }
+    },
+    []
+  );
 
   const lisc = clientes.map((client) => {
     return (
       <ListC
+        key={client.name}
         name={client.name}
         direccion={client.direccion}
         ubicacion={client.ubicacion}
@@ -66,8 +73,11 @@ export default function Clientes() {
       />
     );
   });
+
   const addCliente = (cliente) => {
+    const newClientes = [...clientes, cliente];
     setClientes([...clientes, cliente]);
+
     saveDataToLocalStorage("listClientes", clientes);
   };
 
@@ -79,6 +89,50 @@ export default function Clientes() {
       <NewC addCliente={addCliente} />
 
       <div className="contenCard">{lisc}</div>
+
+      <Example />
+    </div>
+  );
+}
+
+function Example() {
+  const [count, setCount] = useState(0);
+
+  // console.log('Render Example');
+
+  // console.log('count: ', count);
+
+  // useEffect(() => {
+  //   console.log('useEffect Example');
+  // }, [count]);
+
+
+  return (
+    <div>
+      <h1>Example</h1>
+      <p>You clicked {count} times</p>
+      <div>
+        <button onClick={() => setCount(count + 1)}>Increment</button>
+      </div>
+      {count > 3 && count < 10 && <Greet />}
+    </div>
+  )
+}
+
+function Greet() {
+  console.log('Render Greet');
+
+  useEffect(() => {
+    console.log('Mount Greet');
+
+    return () => {
+      console.log('Unmount Greet');
+    }
+  }, []);
+
+  return (
+    <div>
+      <h1>Greet</h1>
     </div>
   );
 }
